@@ -1,0 +1,24 @@
+{
+  "name": "DualOTA",
+  "version": "1.0",
+  "author": "wladimir-computin",
+  "maintainer": "David W. <davidw.software@gmail.com>",
+  "sentence": "DualOTA library, includes ArduinoOTA and WebServer OTA",
+  "paragraph": "...",
+  "category": "Communication",
+  "homepage": "https://example.org/",
+  "dot_a_linkage": true,
+  "dependencies": [
+    {
+        "name": "LittleFS"
+    },
+    {
+      "name": "PrintDebug",
+      "version": "file://../CryptoIoT-Core/PrintDebug"
+    },
+    {
+      "name": "StatusLED",
+      "version": "file://../CryptoIoT-Core/StatusLED"
+    }
+  ]
+}

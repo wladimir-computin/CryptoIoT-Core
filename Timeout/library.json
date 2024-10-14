@@ -1,0 +1,13 @@
+{
+  "name": "Timeout",
+  "version": "1.0",
+  "author": "wladimir-computin",
+  "maintainer": "David W. <davidw.software@gmail.com>",
+  "sentence": "Sometimes you just need a timeout.",
+  "paragraph": "...",
+  "category": "Communication",
+  "homepage": "https://example.org/",
+  "dot_a_linkage": true,
+  "dependencies": [
+  ]
+}

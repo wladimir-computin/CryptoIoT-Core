@@ -1,0 +1,17 @@
+{
+  "name": "Relays",
+  "version": "1.0",
+  "author": "wladimir-computin",
+  "maintainer": "David W. <davidw.software@gmail.com>",
+  "sentence": "Relays library, simplifies async relay handling.",
+  "paragraph": "...",
+  "category": "Communication",
+  "homepage": "https://example.org/",
+  "dot_a_linkage": true,
+  "dependencies": [
+    {
+      "name": "PrintDebug",
+      "version": "file://../CryptoIoT-Core/PrintDebug"
+    }
+  ]
+}

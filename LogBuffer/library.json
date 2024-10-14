@@ -1,0 +1,17 @@
+{
+  "name": "LogBuffer",
+  "version": "1.0",
+  "author": "wladimir-computin",
+  "maintainer": "David W. <davidw.software@gmail.com>",
+  "sentence": "Library for maintaining a fixed size circular log file.",
+  "paragraph": "Log events to log file as you would print them via Serial for asynchronous wireless debugging.",
+  "category": "Data Storage",
+  "homepage": "https://example.org/",
+  "dot_a_linkage": true,
+  "dependencies": [
+    {
+      "name": "PrintDebug",
+      "version": "file://../CryptoIoT-Core/PrintDebug"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "PrintDebug",
+  "version": "1.0",
+  "author": "wladimir-computin",
+  "maintainer": "David W. <davidw.software@gmail.com>",
+  "sentence": "Quick Debug printing",
+  "paragraph": "...",
+  "category": "Communication",
+  "homepage": "https://example.org/",
+  "dot_a_linkage": true,
+  "dependencies": [
+  ]
+}

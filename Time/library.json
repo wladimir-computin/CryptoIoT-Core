@@ -1,0 +1,25 @@
+{
+  "name": "Time",
+  "version": "1.0",
+  "author": "wladimir-computin",
+  "maintainer": "David W. <davidw.software@gmail.com>",
+  "sentence": "Time library, use posix time implementation with ntp. Calculates sunset/sunrise with custom angle",
+  "paragraph": "...",
+  "category": "Communication",
+  "homepage": "https://example.org/",
+  "dot_a_linkage": true,
+  "dependencies": [
+    {
+        "owner": "buelowp",
+        "name": "sunset"
+    },
+    {
+      "name": "PersistentMemory",
+      "version": "file://../CryptoIoT-Core/PersistentMemory"
+    },
+    {
+      "name": "PrintDebug",
+      "version": "file://../CryptoIoT-Core/PrintDebug"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "name": "CryptoIoT",
+  "version": "2.0",
+  "author": "wladimir-computin",
+  "maintainer": "David W. <davidw.software@gmail.com>",
+  "sentence": "CryptoIoT Core",
+  "paragraph": "CryptoIoT core Library OS. Designed for custom and secure IoT devices.",
+  "category": "Communication",
+  "platforms": ["esp8266", "esp32"],
+  "homepage": "https://example.org/",
+  "dot_a_linkage": true,
+  "frameworks": ["arduino", "esp8266-nonos-sdk", "espidf"],
+  "dependencies": [
+    {
+        "owner": "rweather",
+        "name": "Crypto"
+    },
+    {
+        "owner": "bblanchon",
+        "name": "ArduinoJson"
+    },
+    {
+      "name": "PersistentMemory",
+      "version": "file://../CryptoIoT-Core/PersistentMemory"
+    },
+    {
+      "name": "WiFiManager",
+      "version": "file://../CryptoIoT-Core/WiFiManager"
+    },
+    {
+      "name": "Uptime",
+      "version": "file://../CryptoIoT-Core/Uptime"
+    },
+    {
+      "name": "DualOTA",
+      "version": "file://../CryptoIoT-Core/DualOTA"
+    },
+    {
+      "name": "Time",
+      "version": "file://../CryptoIoT-Core/Time"
+    },
+    {
+      "name": "Timeout",
+      "version": "file://../CryptoIoT-Core/Timeout"
+    },
+    {
+      "name": "Recovery",
+      "version": "file://../CryptoIoT-Core/Recovery"
+    },
+    {
+      "name": "LogBuffer",
+      "version": "file://../CryptoIoT-Core/LogBuffer"
+    },
+    {
+      "name": "PrintDebug",
+      "version": "file://../CryptoIoT-Core/PrintDebug"
+    },
+    {
+      "name": "StatusLED",
+      "version": "file://../CryptoIoT-Core/StatusLED"
+    }
+  ]
+}
