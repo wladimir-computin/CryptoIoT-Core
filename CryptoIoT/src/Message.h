@@ -10,6 +10,7 @@
 #include <PrintDebug.h>
 #include "Crypto.h"
 #include "ChallengeManager.h"
+#include "Command.h"
 
 //  Message structure:
 //  [MESSAGE_BEGIN] CODE : b64(IV) : b64(TAG) : b64(enc(challenge_response_b64 : challenge_request_b64 : DATA, IV)) [MESSAGE_END]
@@ -50,6 +51,7 @@ struct ProcessMessageStruct{
   MessageType responseCode;
   String responseData;
   String flags;
+  Validation validationResult;
 };
 
 class Message {

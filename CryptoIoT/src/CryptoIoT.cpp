@@ -601,7 +601,7 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 			out.reserve(512);
 			char formatparam[] = ":[%s|%s]";
 			char formatparamoptional[] = ":?[%s|%s]";
-			char buf[64];
+			char buf[128];
 			if(appname == ""){
 				for (int cmd = 0; cmd < ARRAY_LEN(commands); cmd++){
 					out += commands[cmd]->str_command;
@@ -620,7 +620,7 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 				for (int i = 0; i < apps_len; i++) {
 					if(apps[i]->getName() == appname){
 						for (int cmd = 0; cmd < apps[i]->getNumCommands(); cmd++){
-							snprintf(buf, ARRAY_LEN(buf), formatcommand, appname, apps[i]->getCommands()[cmd]->str_command);
+							snprintf(buf, ARRAY_LEN(buf), formatcommand, appname.c_str(), apps[i]->getCommands()[cmd]->str_command);
 							out += buf;
 							for (int param = 0; param < apps[i]->getCommands()[cmd]->size_params; param++){
 								if(!apps[i]->getCommands()[cmd]->params_arr[param].optional){

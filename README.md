@@ -1,2 +1,2 @@
 # CryptoIoT-Core
-Serverless smarthome OS with E2E-encrypted communication
+Hubless smarthome OS with E2E-encrypted communication
