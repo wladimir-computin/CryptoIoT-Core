@@ -49,7 +49,7 @@
 #include <WiFiManager.h>
 #include <Uptime.h>
 #include <DualOTA.h>
-#include <Time.h>
+#include <CIoT_Time.h>
 #include <Recovery.h>
 #include <LogBuffer.h>
 #include <PrintDebug.h>

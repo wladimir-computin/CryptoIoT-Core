@@ -1,10 +1,10 @@
 /*
-* CryptoGarage - TIme
+* CryptoIoT - Time
 * 
 * (implementation)
 */
 
-#include "Time.h"
+#include "CIoT_Time.h"
 
 void Time::setup(){
   PersistentMemory pmem("time", true);

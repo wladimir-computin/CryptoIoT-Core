@@ -63,6 +63,12 @@ int TimerManager::mod(int a, int b) {
   return a % b;
 }
 
+void TimerManager::execDelayed(const char * command, int after_ms){
+	timer_events[sizeof(timer_events) / sizeof(timer_events[0])-1].command = command;
+	timer_events[sizeof(timer_events) / sizeof(timer_events[0])-1].timestamp = millis() + after_ms;
+	sortByTimes();
+}
+
 void TimerManager::execDelayed(String& command, int after_ms){
 	timer_events[sizeof(timer_events) / sizeof(timer_events[0])-1].command = command;
 	timer_events[sizeof(timer_events) / sizeof(timer_events[0])-1].timestamp = millis() + after_ms;

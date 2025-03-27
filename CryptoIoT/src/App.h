@@ -12,7 +12,7 @@
 #include "CryptoIoT_API.h"
 #include <LogBuffer.h>
 #include <PrintDebug.h>
-#include <Time.h>
+#include <CIoT_Time.h>
 
 const char NO_COMMAND[] = "NO_COMMAND";
 

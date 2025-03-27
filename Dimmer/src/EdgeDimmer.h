@@ -11,7 +11,7 @@
 #include <Ticker.h>
 #include <App.h>
 #include <PersistentMemory.h>
-#include <Time.h>
+#include <CIoT_Time.h>
 #include "IDimmer.h"
 
 #include "GaussCurve.h"

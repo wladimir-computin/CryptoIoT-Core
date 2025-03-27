@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Time.h>
+#include <CIoT_Time.h>
 
 #include "App.h"
 #include "Message.h"
@@ -34,4 +34,5 @@ class TimerManager {
 		void loop();
 		String getStatus();
 		void execDelayed(String& command, int after_ms);
+		void execDelayed(const char * command, int after_ms);
 };

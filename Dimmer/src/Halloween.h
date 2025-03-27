@@ -9,7 +9,7 @@
 #include <Ticker.h>
 #include <App.h>
 #include <PersistentMemory.h>
-#include <Time.h>
+#include <CIoT_Time.h>
 #include "IDimmer.h"
 
 static Param COMMAND_HALLOWEEN_ENABLE_PARAMS[] = {{"value", DATATYPE_BOOL, false, 0, 1}};
