@@ -1,6 +1,6 @@
 {
   "name": "Time",
-  "version": "1.0",
+  "version": "2.0",
   "author": "wladimir-computin",
   "maintainer": "David W. <davidw.software@gmail.com>",
   "sentence": "Time library, use posix time implementation with ntp. Calculates sunset/sunrise with custom angle",
