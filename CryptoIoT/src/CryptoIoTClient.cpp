@@ -85,7 +85,7 @@ void CryptoIoTClient::doUDPClientStuff(){
 			if(s != ""){
 				Msg msg;
 				Message::decrypt(msg, crypto, s, challengeManager);
-				if (msg.type == ACK || DATA) {
+				if (msg.type == ACK || msg.type == DATA) {
 					if(argument.callback != NULL){
 						argument.callback(msg.data, argument.param);
 					}

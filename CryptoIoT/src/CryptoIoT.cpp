@@ -41,7 +41,7 @@ void CryptoIoT::loop() {
 		String cmd = Serial.readStringUntil('\n');
 		Serial.println(cmd);
 		ProcessMessageStruct out = processMessage(cmd);
-		Serial.printf("%c:%s:%s\n", Message::typeToChar(out.responseCode), out.flags, out.responseData.c_str());
+		Serial.printf("%c:%s:%s\n", Message::typeToChar(out.responseCode), out.flags.c_str(), out.responseData.c_str());
 	}
 	#endif
 }
