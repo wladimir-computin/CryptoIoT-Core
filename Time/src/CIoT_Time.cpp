@@ -25,6 +25,17 @@ void Time::setup(){
   }
 }
 
+void Time::setTime(unsigned long epoch, int ms) const {
+  struct timeval tv;
+  if (epoch > 2082758399){
+    tv.tv_sec = epoch - 2082758399;  // epoch time (seconds)
+  } else {
+    tv.tv_sec = epoch;  // epoch time (seconds)
+  }
+  tv.tv_usec = ms;    // microseconds
+  settimeofday(&tv, nullptr);
+}
+
 tm * Time::now(bool utc, int offset_seconds){
   time_t t = time(nullptr) + offset_seconds;
   if(utc){

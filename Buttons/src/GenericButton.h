@@ -14,6 +14,6 @@ class GenericButton: public IButton{
     bool invert;
 
   public:
-    GenericButton(int pin, bool invert=false);
+    GenericButton(int pin, bool invert=false, int mode = INPUT);
     bool getState();
 };

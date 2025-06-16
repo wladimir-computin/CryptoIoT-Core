@@ -11,7 +11,7 @@
 #include <Arduino.h>
 #include <PrintDebug.h>
 
-enum ButtonState {BUTTON_UP, BUTTON_FALLING, BUTTON_DOWN, BUTTON_RISING};
+enum ButtonState {BUTTON_RELEASED, BUTTON_PUSH, BUTTON_PUSHED, BUTTON_RELEASE};
 typedef void (*ButtonCallbackFun)(void * context, int num, ButtonState value, long previousStateMillis);
 
 class IButton{
@@ -26,7 +26,7 @@ class IButton{
     virtual bool getState() = 0;
 
   protected:
-    ButtonState currentState = BUTTON_UP;
+    ButtonState currentState = BUTTON_RELEASED;
     bool buttonSamples[3];
     int samplesSize = sizeof(buttonSamples) / sizeof(buttonSamples[0]);
     int currentSample = 0;

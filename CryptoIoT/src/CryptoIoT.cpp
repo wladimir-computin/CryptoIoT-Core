@@ -595,47 +595,53 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 		return {DATA, out};
 	}
 	
-		if (COMMAND_HELP.check(message)) {
-			String appname = COMMAND_HELP.getParamVal(message, 0);
-			String out;
-			out.reserve(512);
-			char formatparam[] = ":[%s|%s]";
-			char formatparamoptional[] = ":?[%s|%s]";
-			char buf[128];
-			if(appname == ""){
-				for (int cmd = 0; cmd < ARRAY_LEN(commands); cmd++){
-					out += commands[cmd]->str_command;
-					for (int param = 0; param < commands[cmd]->size_params; param++){
-						if(!commands[cmd]->params_arr[param].optional){
-							snprintf(buf, ARRAY_LEN(buf), formatparam, commands[cmd]->params_arr[param].name, commands[cmd]->params_arr[param].datatype);
-						} else {
-							snprintf(buf, ARRAY_LEN(buf), formatparamoptional, commands[cmd]->params_arr[param].name, commands[cmd]->params_arr[param].datatype);
-						}
-						out += buf;
+	if (COMMAND_HELP.check(message)) {
+		String appname = COMMAND_HELP.getParamVal(message, 0);
+		String out;
+		out.reserve(512);
+		char formatparam[] = ":[%s|%s]";
+		char formatparamoptional[] = ":?[%s|%s]";
+		char buf[128];
+		if(appname == ""){
+			for (int cmd = 0; cmd < ARRAY_LEN(commands); cmd++){
+				out += commands[cmd]->str_command;
+				for (int param = 0; param < commands[cmd]->size_params; param++){
+					if(!commands[cmd]->params_arr[param].optional){
+						snprintf(buf, ARRAY_LEN(buf), formatparam, commands[cmd]->params_arr[param].name, commands[cmd]->params_arr[param].datatype);
+					} else {
+						snprintf(buf, ARRAY_LEN(buf), formatparamoptional, commands[cmd]->params_arr[param].name, commands[cmd]->params_arr[param].datatype);
 					}
-					out += "\n";
+					out += buf;
 				}
-			} else {
-				char formatcommand[] = "%s:%s";
-				for (int i = 0; i < apps_len; i++) {
-					if(apps[i]->getName() == appname){
-						for (int cmd = 0; cmd < apps[i]->getNumCommands(); cmd++){
-							snprintf(buf, ARRAY_LEN(buf), formatcommand, appname.c_str(), apps[i]->getCommands()[cmd]->str_command);
-							out += buf;
-							for (int param = 0; param < apps[i]->getCommands()[cmd]->size_params; param++){
-								if(!apps[i]->getCommands()[cmd]->params_arr[param].optional){
-									snprintf(buf, ARRAY_LEN(buf), formatparam, apps[i]->getCommands()[cmd]->params_arr[param].name, apps[i]->getCommands()[cmd]->params_arr[param].datatype);
-								} else {
-									snprintf(buf, ARRAY_LEN(buf), formatparamoptional, apps[i]->getCommands()[cmd]->params_arr[param].name, apps[i]->getCommands()[cmd]->params_arr[param].datatype);
-								}
-								out += buf;
+				out += "\n";
+			}
+		} else {
+			char formatcommand[] = "%s:%s";
+			for (int i = 0; i < apps_len; i++) {
+				if(apps[i]->getName() == appname){
+					for (int cmd = 0; cmd < apps[i]->getNumCommands(); cmd++){
+						snprintf(buf, ARRAY_LEN(buf), formatcommand, appname.c_str(), apps[i]->getCommands()[cmd]->str_command);
+						out += buf;
+						for (int param = 0; param < apps[i]->getCommands()[cmd]->size_params; param++){
+							if(!apps[i]->getCommands()[cmd]->params_arr[param].optional){
+								snprintf(buf, ARRAY_LEN(buf), formatparam, apps[i]->getCommands()[cmd]->params_arr[param].name, apps[i]->getCommands()[cmd]->params_arr[param].datatype);
+							} else {
+								snprintf(buf, ARRAY_LEN(buf), formatparamoptional, apps[i]->getCommands()[cmd]->params_arr[param].name, apps[i]->getCommands()[cmd]->params_arr[param].datatype);
 							}
-							out += "\n";
+							out += buf;
 						}
+						out += "\n";
 					}
 				}
 			}
+		}
 		return {DATA, out};
+	}
+
+	if (COMMAND_SETTIME.check(message)) {
+		int epoch = COMMAND_SETTIME.getParamVal(message, 0).toInt();
+		mytime.setTime(epoch);
+		return {ACK, ""};
 	}
 	
 	printDebug("Received unknown command:" + message);

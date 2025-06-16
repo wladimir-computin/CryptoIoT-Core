@@ -9,6 +9,7 @@
 #include <Arduino.h>
 #include <PersistentMemory.h>
 #include <time.h>
+#include <sys/time.h>  // settimeofday for esp8266
 #include <sunset.h>
 #include <PrintDebug.h>
 
@@ -39,6 +40,7 @@ class Time {
   
   public:
     void setup();
+    void setTime(unsigned long epoch, int ms=0) const;
     tm * now(bool utc=false, int offset_seconds=0);
     int minutesSinceMidnight(bool utc=false);
     String stringTime(bool utc=false);

@@ -132,7 +132,9 @@ Validation Command::validate(String& message){
         return {4, i, this};
       }
     } else if (strcmp(param->datatype, DATATYPE_STRING) == 0) {
-      
+      if(!(val.length() >= param->min && val.length() <= param->max)){
+        return {4, i, this};
+      }
     }
   }
   

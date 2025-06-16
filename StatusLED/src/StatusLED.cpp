@@ -8,14 +8,18 @@
 
 StatusLED::StatusLED(int pin){
 #if ENABLE_STATUS_LED == 1
-  ledPin = pin;
-  pinMode(ledPin, OUTPUT);
-  setState(false);
-#ifdef ARDUINO_ARCH_ESP32
-  //ledcSetup(ESP32_LED_CHANNEL, ESP32_LED_FREQ, ESP32_LED_RESOLUTION);
-  //ledcAttachPin(ledPin, ESP32_LED_CHANNEL);
-  analogWriteResolution(10);
-#endif
+    ledPin = pin;
+    pinMode(ledPin, OUTPUT);
+    setState(false);
+  #ifdef ARDUINO_ARCH_ESP32
+    //ledcSetup(ESP32_LED_CHANNEL, ESP32_LED_FREQ, ESP32_LED_RESOLUTION);
+    //ledcAttachPin(ledPin, ESP32_LED_CHANNEL);
+    #ifdef ARDUINO_ESP32_CORE_V3
+      analogWriteResolution(pin, 10);
+    #else
+      analogWriteResolution(10);
+    #endif
+  #endif
 #endif
 }
 
@@ -31,12 +35,7 @@ void StatusLED::setState(bool state){
 void StatusLED::setVal(double val){
 #if ENABLE_STATUS_LED == 1
   val = constrain(val, 0.0, 1.0);
-#ifdef ARDUINO_ARCH_ESP32
   analogWrite(ledPin, toAbsolute(val));
-  //ledcWrite(ESP32_LED_CHANNEL, toAbsolute(val));
-#else
-  analogWrite(ledPin, toAbsolute(val));
-#endif
   current = val;
 #endif
 }

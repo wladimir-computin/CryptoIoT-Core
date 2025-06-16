@@ -33,40 +33,40 @@ void IButton::loop(){
     buttonValue /= samplesSize;
 
     switch(currentState){
-      case BUTTON_UP:
-        if(buttonValue < 0.2){
-          currentState = BUTTON_FALLING;
-          previousStateSince = currentStateSince;
-          currentStateSince = now;
-          callback(context, inputPin, BUTTON_FALLING, now - previousStateSince);
-        }
-        nextMillis = 0;
-        break;
-
-      case BUTTON_FALLING:
-        nextMillis = now + WAIT_TIME;
-        currentState = BUTTON_DOWN;
-        previousStateSince = currentStateSince;
-        currentStateSince = now;
-        callback(context, inputPin, BUTTON_DOWN, now - previousStateSince);
-        break;
-
-      case BUTTON_DOWN:
+      case BUTTON_RELEASED:
         if(buttonValue > 0.8){
-          currentState = BUTTON_RISING;
+          currentState = BUTTON_PUSH;
           previousStateSince = currentStateSince;
           currentStateSince = now;
-          callback(context, inputPin, BUTTON_RISING, now - previousStateSince);
+          callback(context, inputPin, BUTTON_PUSH, now - previousStateSince);
         }
         nextMillis = 0;
         break;
 
-      case BUTTON_RISING:
+      case BUTTON_PUSH:
         nextMillis = now + WAIT_TIME;
-        currentState = BUTTON_UP;
+        currentState = BUTTON_PUSHED;
         previousStateSince = currentStateSince;
         currentStateSince = now;
-        callback(context, inputPin, BUTTON_UP, now - previousStateSince);
+        callback(context, inputPin, BUTTON_PUSHED, now - previousStateSince);
+        break;
+
+      case BUTTON_PUSHED:
+        if(buttonValue < 0.2){
+          currentState = BUTTON_RELEASE;
+          previousStateSince = currentStateSince;
+          currentStateSince = now;
+          callback(context, inputPin, BUTTON_RELEASE, now - previousStateSince);
+        }
+        nextMillis = 0;
+        break;
+
+      case BUTTON_RELEASE:
+        nextMillis = now + WAIT_TIME;
+        currentState = BUTTON_RELEASED;
+        previousStateSince = currentStateSince;
+        currentStateSince = now;
+        callback(context, inputPin, BUTTON_RELEASED, now - previousStateSince);
         break;
     }
   }
