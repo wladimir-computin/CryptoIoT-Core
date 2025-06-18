@@ -36,7 +36,7 @@ void CryptoIoT::loop() {
 	doTCPServerStuff();
 #endif
 	
-	#if DEBUG == 1
+	#if DEBUG == 1 || CRYPTOIOT_UNENCRYPTED_SERIAL == 1
 	if (Serial.available()) {
 		String cmd = Serial.readStringUntil('\n');
 		Serial.println(cmd);
