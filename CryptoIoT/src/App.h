@@ -21,7 +21,7 @@ class App{
 
     CryptoIoT_API cryptoiot;
     String appname;
-    Command * commands[10] = {nullptr};
+    Command * commands[32] = {nullptr};
     int commands_len = 0;
     
     void registerCommand(Command &command){
