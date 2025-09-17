@@ -6,7 +6,7 @@
 
 #include "PWMDimmer.h"
 
-static int curve_lookup[1000 + 1];
+static int curve_lookup[1023 + 1];
 
 PWMDimmer::PWMDimmer(const char * name, int pin) : IDimmer(name) {
 	pwmPin = pin;
@@ -18,7 +18,7 @@ void PWMDimmer::loop() {
 void PWMDimmer::setup() {
 	PersistentMemory pmem(appname, true);
 	pwmPin = pmem.readInt(KEY_PWM_PIN, pwmPin);
-	String pointsstr = pmem.readString(KEY_CURVE_POINTS, "0,0 1000,1000");
+	String pointsstr = pmem.readString(KEY_CURVE_POINTS, "0,0 1000,1023");
 	pmem.commit();
   
 	printDebug("[PWMDimmer] Generating lookup table...");

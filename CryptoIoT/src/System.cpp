@@ -8,7 +8,7 @@
 
 void System::getSerialID(char * str, bool delim){
 	uint8_t buf[6];
-	#ifdef ARDUINO_ARCH_ESP32
+	#if (defined ARDUINO_ARCH_ESP32 && defined ARDUINO_ESP32_CORE_V3)
 		Network.macAddress(buf);
 	#else
 		WiFi.macAddress(buf);

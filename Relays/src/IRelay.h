@@ -25,5 +25,5 @@ class IRelay{
     virtual void setState(bool state) = 0;
     virtual bool getState() = 0;
     //setState(true), delay (via Timer), setState(false)
-    void trigger();
+    void trigger(int duration_ms=RELAY_TRIGGER_TIME_MS);
 };

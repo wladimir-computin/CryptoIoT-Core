@@ -11,8 +11,8 @@ void IRelay::relayTickerTick(void * context){
   (*(IRelay*)context).setState(false);
 }
 
-void IRelay::trigger(){
+void IRelay::trigger(int duration_ms){
   setState(true);
-  relayTicker.once_ms(RELAY_TRIGGER_TIME_MS, relayTickerTick, (void*)this); //call setState(false) after [RELAY_TRIGGER_TIME_MS] milliseconds passed.
+  relayTicker.once_ms(duration_ms, relayTickerTick, (void*)this); //call setState(false) after [duration_ms] milliseconds passed.
 }
 

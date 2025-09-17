@@ -36,6 +36,7 @@ class StatusLED {
     const int MAXLED = 1023;
     const int MINLED = 0;
     const int FADEFPS = 60;
+    bool invert_output = false;
     
     double ease(double t);
 	double toRelative(int absolute);
@@ -47,10 +48,20 @@ class StatusLED {
 
 
   public:
-#ifdef LED_BUILTIN
-    StatusLED(int pin=LED_BUILTIN);
+#ifndef INFO_LED_INVERT
+  #ifdef ARDUINO_ARCH_ESP8266
+    #define INFO_LED_INVERT true
+  #else
+    #define INFO_LED_INVERT false
+  #endif
+#endif
+
+#if defined(INFO_LED_PIN)
+    StatusLED(int pin=INFO_LED_PIN, bool invert=INFO_LED_INVERT);
+#elif defined(LED_BUILTIN)
+    StatusLED(int pin=LED_BUILTIN, bool invert=INFO_LED_INVERT);
 #else
-    StatusLED(int pin=2);
+    StatusLED(int pin=2, bool invert=INFO_LED_INVERT);
 #endif
     void setState(bool state);
     void setVal(double val);

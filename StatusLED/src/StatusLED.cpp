@@ -6,11 +6,12 @@
 
 #include "StatusLED.h"
 
-StatusLED::StatusLED(int pin){
+StatusLED::StatusLED(int pin, bool invert){
 #if ENABLE_STATUS_LED == 1
     ledPin = pin;
     pinMode(ledPin, OUTPUT);
     setState(false);
+    invert_output = invert;
   #ifdef ARDUINO_ARCH_ESP32
     //ledcSetup(ESP32_LED_CHANNEL, ESP32_LED_FREQ, ESP32_LED_RESOLUTION);
     //ledcAttachPin(ledPin, ESP32_LED_CHANNEL);
@@ -146,11 +147,12 @@ double StatusLED::ease(double t) {
 
 double StatusLED::toRelative(int absolute) {
 #if ENABLE_STATUS_LED == 1
-  #ifdef ARDUINO_ARCH_ESP8266
-    double ret = sqrt((double)(absolute-1023) / -1023.0);
-  #else
-    double ret = sqrt((double)(absolute)/1023.0);
-  #endif
+  double ret;
+  if(invert_output){
+    ret = sqrt((double)(absolute-1023) / -1023.0);
+  } else {
+    ret = sqrt((double)(absolute)/1023.0);
+  }
   ret = constrain(ret, 0.0, 1.0);
   
   return ret;
@@ -164,11 +166,12 @@ int StatusLED::toAbsolute(double relative) {
   int ret = (int)round(1023.0*relative*relative);
   ret = constrain(ret, MINLED, MAXLED);
   
-  #ifdef ARDUINO_ARCH_ESP8266
+  if(invert_output){
     return 1023 - ret;
-  #else
+  } else {
     return ret;
-  #endif
-#endif
+  }
+#else
   return 0;
+#endif
 }

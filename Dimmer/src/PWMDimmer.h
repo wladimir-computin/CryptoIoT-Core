@@ -15,7 +15,7 @@
 const char KEY_PWM_PIN[] = "pwm_pin";
 const char KEY_CURVE_POINTS[] = "curve_points";
 
-const int MAX_BRIGHTNESS = 1000;
+const int MAX_BRIGHTNESS = 1023;
 const int MIN_BRIGHTNESS = 0;
 
 class PWMDimmer : public IDimmer {
