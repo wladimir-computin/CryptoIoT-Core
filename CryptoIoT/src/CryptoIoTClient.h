@@ -4,7 +4,7 @@
 #include "Message.h"
 #include "Crypto.h"
 
-typedef void (*ciot_client_callback)(String& response, void * param);
+typedef void (*ciot_client_callback)(Msg& response, void * param);
 
 class CryptoIoTClient{
 

@@ -24,10 +24,10 @@ class CryptoIoTClientApp : public App {
 	String getType();
     void loop();
     void setup();
-    void responseReceived(String& response);
+    void responseReceived(Msg& response);
 
   private:
     CryptoIoTClient ciot;
     String appname;
 };
-void callback(String &response, void * param);
+void callback(Msg &response, void * param);

@@ -19,25 +19,30 @@ void ChallengeManager::stateTick(void * context) {
   (*(ChallengeManager*)context).resetChallenge();
 }
 
-void ChallengeManager::getCurrentChallenge(uint8_t * challenge_out){
-  memcpy(challenge_out, challenge, CHALLENGE_LEN);
-}
-
-void ChallengeManager::generateRandomChallenge(uint8_t * challenge_out){
-  resetChallenge();
-  Crypto::getRandom(challenge, CHALLENGE_LEN);
-  memcpy(challenge_out, challenge, CHALLENGE_LEN);
+uint8_t * ChallengeManager::generateRandomChallenge(){
+  stateTicker.detach();
+  Crypto::getRandom(challenge_local, CHALLENGE_LEN);
   stateTicker.attach(challenge_timeout, stateTick, (void*)this);
+  return challenge_local;
 }
 
 bool ChallengeManager::verifyChallenge(uint8_t * challenge_response){
-  if(memcmp(challenge, EMPTY_CHALLENGE, CHALLENGE_LEN) != 0){
-    return memcmp(challenge, challenge_response, CHALLENGE_LEN) == 0;
+  if(memcmp(challenge_local, EMPTY_CHALLENGE, CHALLENGE_LEN) != 0){
+    return memcmp(challenge_local, challenge_response, CHALLENGE_LEN) == 0;
   }
   return false;
 }
 
+void ChallengeManager::rememberLastChallengeRequest(uint8_t * challenge_in){
+  memcpy(challenge_remote, challenge_in, CHALLENGE_LEN);
+}
+
+uint8_t * ChallengeManager::getLastChallengeRequest(){
+  return challenge_remote;
+}
+
 void ChallengeManager::resetChallenge(){
   stateTicker.detach();
-  memset(challenge, 0, CHALLENGE_LEN);;
+  memset(challenge_local, 0, CHALLENGE_LEN);
+  memset(challenge_remote, 0, CHALLENGE_LEN);
 }

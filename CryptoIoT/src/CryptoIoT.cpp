@@ -211,21 +211,15 @@ void CryptoIoT::doTCPServerStuff() {
 
        if (message.type == HELLO) {
          //preparing random challenge secret
-		 uint8_t challenge_request[CHALLENGE_LEN];
-		 challengeManager.generateRandomChallenge(challenge_request);
-         send_Data_TCP(tcpclient, Message::encrypt(crypto, HELLO, "", message.challenge, challenge_request, FLAG_NONE));
+         send_Data_TCP(tcpclient, Message::encrypt(crypto, challengeManager, HELLO, "", FLAG_NONE));
          //sending encrypted challenge to client, the client has to prove its knowledge of the correct password by encrypting the next
          //message containing our challenge. We have proven our knowledge by sending the reencrypted client_challenge back.
 
          //the client send a correctly encrypted second message.
        } else if (message.type == DATA) {
          ProcessMessageStruct ret = processMessage(message.data); //process his data
-
-         //preparing next random challenge secret
-		 uint8_t challenge_request[CHALLENGE_LEN];
-		 challengeManager.generateRandomChallenge(challenge_request);
          //send answer
-         send_Data_TCP(tcpclient, Message::encrypt(ret.responseCode, ret.responseData, message.challenge, challenge_request, ret.flags));
+         send_Data_TCP(tcpclient, Message::encrypt(crypto, challengeManager, ret.responseCode, ret.responseData, ret.flags));
 
          //for some messages (like setSettings) we know that the client may send a following one very quickly.
          //other messages (like trigger) shouldn't be called that quickly.
@@ -234,14 +228,14 @@ void CryptoIoT::doTCPServerStuff() {
          }
        } else {
          printDebug("Wrong formatted message received!");
-         send_Data_TCP(tcpclient, Message::encrypt(crypto, ERR, "Nope!", nullptr, nullptr, FLAG_NONE));
+         send_Data_TCP(tcpclient, Message::encrypt(crypto, challengeManager, ERR, "Nope!", FLAG_NONE));
          stopClient_TCP(tcpclient);
        }
 
      } else {
        printDebug("Decryption failed!");
        challengeManager.resetChallenge();
-       send_Data_TCP(tcpclient, Message::encrypt(crypto, ERR, "Nope!", nullptr, nullptr, FLAG_NONE));
+       send_Data_TCP(tcpclient, Message::encrypt(crypto, challengeManager, ERR, "Nope!", FLAG_NONE));
        stopClient_TCP(tcpclient);
      }
      printDebug("-------------------------------");
@@ -280,20 +274,14 @@ void CryptoIoT::doUDPServerStuff() {
 				//check if the client send a correctly encrypted message.
 				
 				if (message.type == HELLO || (message.type == ERR && message.data == "Challenge missmatch!")) {
-					//preparing random challenge secret
-					uint8_t challenge_request[CHALLENGE_LEN];
-					challengeManager.generateRandomChallenge(challenge_request);
-					send_Data_UDP(Message::encrypt(crypto, HELLO, "", message.challenge, challenge_request, FLAG_NONE));
+					send_Data_UDP(Message::encrypt(crypto, challengeManager, HELLO, "", FLAG_NONE));
 					//sending  challenge to client, the client has to prove its knowledge of the correct password by encrypting the next
 					//message containing our challenge. We have proven our knowledge by sending the reencrypted client_challenge back.
 					
 				} else if (message.type == DATA) {
 					ProcessMessageStruct ret = processMessage(message.data); //process his data
 					
-					//preparing next random challenge secret
-					uint8_t challenge_request[CHALLENGE_LEN];
-					challengeManager.generateRandomChallenge(challenge_request);
-					send_Data_UDP(Message::encrypt(crypto, ret.responseCode, ret.responseData, message.challenge, challenge_request, ret.flags)); //send answer
+					send_Data_UDP(Message::encrypt(crypto, challengeManager, ret.responseCode, ret.responseData, ret.flags)); //send answer
 					
 					//for some messages (like setSettings) we know that the client may send a following one very quickly.
 					//other messages (like trigger) shouldn't be called that quickly.
@@ -302,14 +290,14 @@ void CryptoIoT::doUDPServerStuff() {
 					}
 				} else {
 					printDebug("Wrong formatted message received!");
-					send_Data_UDP(Message::encrypt(crypto, ERR, "Nope!", nullptr, nullptr, FLAG_NONE));
+					send_Data_UDP(Message::encrypt(crypto, challengeManager, ERR, "Nope!", FLAG_NONE));
 					stopClient_UDP();
 				}
 				
 			} else {
 				printDebug("Decryption failed!");
 				challengeManager.resetChallenge();
-				send_Data_UDP(Message::encrypt(crypto, ERR, "Nope!", nullptr, nullptr, FLAG_NONE));
+				send_Data_UDP(Message::encrypt(crypto, challengeManager, ERR, "Nope!", FLAG_NONE));
 				stopClient_UDP();
 			}
 			printDebug("-------------------------------");
@@ -346,8 +334,6 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 		"Hostname: %s\n"
 		"System-Version: %s\n"
 		"App-Version: %s\n"
-		"Ratelimit: %dms\n"
-		"Challenge timeout: %ds\n"
 		"Updatemode: %d\n"
 		"Free Heap: %dByte\n"
 		"Heap Fragmentation: %d%%\n"
@@ -370,8 +356,6 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 				hostname.c_str(),
 				SYS_VERSION,
 				appversion.c_str(),
-				RATE_LIMIT_TIMEOUT_MS,
-				challengeManager.getChallengeTimeout(),
 				ota.started(),
 				ESP.getFreeHeap(),
 #ifdef ARDUINO_ARCH_ESP8266

@@ -50,7 +50,6 @@ String CryptoIoTClient::receive_Data_UDP() {
 		int len = udpclient.read(incomingPacket, sizeof(incomingPacket) - 1);
 		if (len > 0) {
 			incomingPacket[len] = '\0';
-			printDebug("\n[CIOT] Received:\n" + String(incomingPacket));
 			return Message::unwrap(incomingPacket);
 		}
 	}
@@ -60,21 +59,21 @@ String CryptoIoTClient::receive_Data_UDP() {
 void CryptoIoTClient::doUDPClientStuff(){
 	if(!clientTimeout.finished_once()){
 		if(clientPhase == CONNECT){
-			uint8_t challenge_response[CHALLENGE_LEN];
-			uint8_t challenge_request[CHALLENGE_LEN];
-			challengeManager.generateRandomChallenge(challenge_request);
-			send_Data_UDP(Message::encrypt(crypto, HELLO, "", challenge_response, challenge_request, FLAG_NONE), argument.host, argument.port);
+			send_Data_UDP(Message::encrypt(crypto, challengeManager, DATA, argument.command, FLAG_NONE), argument.host, argument.port);
 			clientPhase = PHASE1;
 		} else if (clientPhase == PHASE1){
 			String s = receive_Data_UDP();
 			if(s != ""){
 				Msg msg;
 				Message::decrypt(msg, crypto, s, challengeManager);
-				uint8_t challenge_request[CHALLENGE_LEN];
-				challengeManager.generateRandomChallenge(challenge_request);
 				if (msg.type == HELLO) {
-					send_Data_UDP(Message::encrypt(crypto, DATA, argument.command, msg.challenge, challenge_request, FLAG_NONE));
+					send_Data_UDP(Message::encrypt(crypto, challengeManager, DATA, argument.command, FLAG_NONE));
 					clientPhase = PHASE2;
+				} else if (msg.type == DATA || msg.type == ACK) {
+					if(argument.callback != nullptr){
+						argument.callback(msg, argument.param);
+					}
+					clientPhase = RETURN;
 				} else {
 					clientPhase = RETURN;
 				}
@@ -86,13 +85,14 @@ void CryptoIoTClient::doUDPClientStuff(){
 				Msg msg;
 				Message::decrypt(msg, crypto, s, challengeManager);
 				if (msg.type == ACK || msg.type == DATA) {
-					if(argument.callback != NULL){
-						argument.callback(msg.data, argument.param);
+					if(argument.callback != nullptr){
+						argument.callback(msg, argument.param);
 					}
 				}
 				clientPhase = RETURN;
 			}
 		} else if (clientPhase == RETURN){
+			receive_Data_UDP(); // Workaround against race condition
 			clientPhase = OFF;
 			clientTimeout.reset();
 		}

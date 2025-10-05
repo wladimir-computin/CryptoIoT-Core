@@ -44,7 +44,6 @@ struct Msg {
   MessageType type;
   char flags[FLAGS_LEN + 1];
   String data;
-  uint8_t challenge[CHALLENGE_LEN];
 };
 
 struct ProcessMessageStruct{
@@ -58,8 +57,8 @@ class Message {
   public:
     static char typeToChar(MessageType t);
     static MessageType charToType(char type);
-    static String encrypt(Crypto &crypto, MessageType type, const uint8_t * data, const int data_len, uint8_t * challenge_response, uint8_t * challenge_request, const char flags[FLAGS_LEN+1]);
-    static String encrypt(Crypto &crypto, MessageType type, const String &data, uint8_t * challenge_response, uint8_t * challenge_request, const String &flags);
+    static String encrypt(Crypto &crypto, ChallengeManager &cm, MessageType type, const uint8_t * data, const int data_len, const char flags[FLAGS_LEN+1]);
+    static String encrypt(Crypto &crypto, ChallengeManager &cm, MessageType type, const String &data, const String &flags);
     static void decrypt(Msg &msg, Crypto &crypto, String &s, ChallengeManager &cm);
     static String wrap(String &message);
     static String unwrap(String &message);

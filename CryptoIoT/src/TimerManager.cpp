@@ -70,7 +70,28 @@ void TimerManager::execDelayed(const char * command, int after_ms){
 }
 
 void TimerManager::execDelayed(String& command, int after_ms){
-	timer_events[sizeof(timer_events) / sizeof(timer_events[0])-1].command = command;
-	timer_events[sizeof(timer_events) / sizeof(timer_events[0])-1].timestamp = millis() + after_ms;
+	execDelayed(command.c_str(), after_ms);
+}
+
+void TimerManager::clear(String& command){
+	clear(command.c_str());
+}
+
+void TimerManager::clear(const char * command){
+	for (int i = 0; i < sizeof(timer_events) / sizeof(timer_events[0]); i++) {
+		TimerEvent &event = timer_events[i];
+		if(event.command == command){
+			event.timestamp = UINT32_MAX;
+			event.command = "";
+		}
+	}
 	sortByTimes();
+}
+
+void TimerManager::clearAll(){
+	for (int i = 0; i < sizeof(timer_events) / sizeof(timer_events[0]); i++) {
+		TimerEvent &event = timer_events[i];
+		event.timestamp = UINT32_MAX;
+		event.command = "";
+	}
 }

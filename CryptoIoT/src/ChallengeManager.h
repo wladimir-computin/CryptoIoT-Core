@@ -19,8 +19,9 @@ const int CHALLENGE_LEN = 12; //Recommended value is 12.
 
 class ChallengeManager {
   private:
-    uint8_t challenge[CHALLENGE_LEN];
-    uint8_t EMPTY_CHALLENGE[CHALLENGE_LEN];
+    uint8_t challenge_local[CHALLENGE_LEN] = {0};
+    uint8_t challenge_remote[CHALLENGE_LEN] = {0};
+    uint8_t EMPTY_CHALLENGE[CHALLENGE_LEN] = {0};
     Ticker stateTicker;
     static void stateTick(void * context);
     int challenge_timeout = DEFAULT_CHALLENGE_VALIDITY_TIMEOUT;
@@ -28,8 +29,9 @@ class ChallengeManager {
   public:
     void setChallengeTimeout(int challenge_timeout);
     int getChallengeTimeout();
-    void generateRandomChallenge(uint8_t * challenge_out);
-    void getCurrentChallenge(uint8_t * challenge_out);
+    uint8_t * generateRandomChallenge();
     void resetChallenge();
-    bool verifyChallenge(uint8_t * challenge_response);
+    bool verifyChallenge(uint8_t * challenge_local);
+    void rememberLastChallengeRequest(uint8_t * challenge_in);
+    uint8_t * getLastChallengeRequest();
 };

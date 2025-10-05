@@ -35,4 +35,7 @@ class TimerManager {
 		String getStatus();
 		void execDelayed(String& command, int after_ms);
 		void execDelayed(const char * command, int after_ms);
+		void clear(String& command);
+		void clear(const char * command);
+		void clearAll();
 };

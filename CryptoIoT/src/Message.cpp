@@ -6,7 +6,7 @@
 
 #include "Message.h"
 
-String Message::encrypt(Crypto &crypto, MessageType type, const uint8_t * data, const int data_len, uint8_t * challenge_response, uint8_t * challenge_request, const char flags[FLAGS_LEN+1]) {
+String Message::encrypt(Crypto &crypto, ChallengeManager &cm, MessageType type, const uint8_t * data, const int data_len, const char flags[FLAGS_LEN+1]) {
   char header = typeToChar(type);
 
   switch (type) {
@@ -38,9 +38,10 @@ String Message::encrypt(Crypto &crypto, MessageType type, const uint8_t * data, 
         strncpy((char*)cleartext+pos, flags, FLAGS_LEN);
         pos += FLAGS_LEN;
         cleartext[pos++] = ':';
-        memcpy(cleartext+pos, challenge_response, CHALLENGE_LEN);
+
+        memcpy(cleartext+pos, cm.getLastChallengeRequest(), CHALLENGE_LEN);
         pos += CHALLENGE_LEN;
-        memcpy(cleartext+pos, challenge_request, CHALLENGE_LEN);
+        memcpy(cleartext+pos, cm.generateRandomChallenge(), CHALLENGE_LEN);
         pos += CHALLENGE_LEN;
         memcpy(cleartext+pos, data, data_len);
         pos += data_len;
@@ -61,8 +62,8 @@ String Message::encrypt(Crypto &crypto, MessageType type, const uint8_t * data, 
   return "";
 }
 
-String Message::encrypt(Crypto &crypto, MessageType type, const String &data, uint8_t * challenge_response, uint8_t * challenge_request, const String &flags) {
-  return encrypt(crypto, type, (uint8_t*)data.c_str(), data.length(), challenge_response, challenge_request, flags.c_str());
+String Message::encrypt(Crypto &crypto, ChallengeManager &cm, MessageType type, const String &data, const String &flags) {
+  return encrypt(crypto, cm, type, (uint8_t*)data.c_str(), data.length(), flags.c_str());
 }
 
 void Message::decrypt(Msg &msg, Crypto &crypto, String &s, ChallengeManager &cm) {
@@ -106,7 +107,7 @@ void Message::decrypt(Msg &msg, Crypto &crypto, String &s, ChallengeManager &cm)
               uint8_t * challenge_request = decryptedData + pos;
               pos += CHALLENGE_LEN;
               uint8_t * data = decryptedData + pos;
-              
+              cm.rememberLastChallengeRequest(challenge_request);
               if (type != HELLO) {
                 //printDebug("Got Challenge Response: " + _challenge_response_b64);
                 if (cm.verifyChallenge(challenge_response)) {
@@ -120,7 +121,6 @@ void Message::decrypt(Msg &msg, Crypto &crypto, String &s, ChallengeManager &cm)
               msg.type = type;
               memcpy(msg.flags, flags, FLAGS_LEN);
               msg.flags[FLAGS_LEN] = '\0';
-              memcpy(msg.challenge, challenge_request, CHALLENGE_LEN);
               return;
             }
           break;

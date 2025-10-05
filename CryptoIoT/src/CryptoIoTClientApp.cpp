@@ -10,11 +10,11 @@ CryptoIoTClientApp::CryptoIoTClientApp(const char * name){
 	appname = name;
 }
 
-void callback(String &response, void * context){
+void callback(Msg &response, void * context){
   (*(CryptoIoTClientApp*)context).responseReceived(response);
 }
 
-void CryptoIoTClientApp::responseReceived(String &response){}
+void CryptoIoTClientApp::responseReceived(Msg &response){}
 
 void CryptoIoTClientApp::loop() {
   ciot.loop();
