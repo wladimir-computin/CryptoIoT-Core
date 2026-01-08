@@ -235,7 +235,26 @@ String WiFiManager::getSSID(){
   }
 }
 
-String WiFiManager::getStatus(){
+String WiFiManager::getMac(){
+  char str[20];
+  uint8_t buf[6];
+  #if (defined ARDUINO_ARCH_ESP32 && defined ARDUINO_ESP32_CORE_V3)
+      Network.macAddress(buf);
+  #else
+      WiFi.macAddress(buf);
+  #endif
+  snprintf(str, 18, "%02X:%02X:%02X:%02X:%02X:%02X", buf[0],buf[1],buf[2],buf[3],buf[4],buf[5]);
+  return str;
+}
+
+float WiFiManager::getSignalStrength(){
+  return min(max(2 * (WiFi.RSSI() + 100), 0), 100) / 100.0;
+}
+
+NetworkInfo WiFiManager::getNetworkInfo(){
+  NetworkInfo info;
+  info.mode = mode2string(mode);
+
   String wifi_status[] = {"WL_IDLE_STATUS",
                         "WL_NO_SSID_AVAIL",
                         "WL_SCAN_COMPLETED",
@@ -246,18 +265,29 @@ String WiFiManager::getStatus(){
   int status_i = WiFi.status();
   String status_s = "";
   if(status_i >= 0 && status_i <= 6){
-    status_s = wifi_status[status_i];
+    info.connection_state = wifi_status[status_i];
   }
 
-  int signal = min(max(2 * (WiFi.RSSI() + 100), 0), 100);
+  info.mac = getMac();
+  info.hostname = hostname;
+  info.sta_ip = WiFi.localIP().toString();
+  info.ap_ip = WiFi.softAPIP().toString();
+  info.sta_ssid = WiFi.SSID();
+  info.ap_ssid = WiFi.softAPSSID();
+  info.signal = getSignalStrength();
+  return info;
+}
+
+String WiFiManager::getStatus(){
+  NetworkInfo info = getNetworkInfo();
   
-  return "Mode: " + mode2string(mode) + "\n" +
-         "Status: " + status_s + "\n" +
-         "AP SSID: " + WiFi.softAPSSID() + "\n" + 
-         "Station SSID: " + WiFi.SSID() + "\n" + 
-         "Signal: " + String(signal) + "%\n" +
-         "IP (AP): " + WiFi.softAPIP().toString() + "\n" +
-         "IP (STA): " + WiFi.localIP().toString();
+  return "Mode: " + info.mode + "\n" +
+         "Status: " + info.connection_state + "\n" +
+         "SSID (AP): " + info.ap_ssid + "\n" +
+         "SSID (STA): " + info.sta_ssid + "\n" +
+         "Signal: " + String((int)(info.signal*100)) + "%\n" +
+         "IP (AP): " + info.ap_ip + "\n" +
+         "IP (STA): " + info.sta_ip;
 }
 
 void WiFiManager::watchdogTick_static(void * context){

@@ -41,5 +41,5 @@ const char DEFAULT_WIFI_AP_IP[] = "192.168.4.1";
 const char KEY_SALT[] = "FTh.!%B$";
 const int SHA_ROUNDS = 5000;
 
-const char SYS_VERSION[] = "10.5";
+const char SYS_VERSION[] = "10.6";
 

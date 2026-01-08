@@ -25,6 +25,18 @@ const char KEY_WIFI_AP_IP[] = "ap_ip";
 
 enum WiFiModes {AP, HYBRID, CLIENT, OFF};
 
+struct NetworkInfo {
+  String mode;
+  String connection_state;
+  String mac;
+  String hostname;
+  String sta_ip;
+  String ap_ip;
+  String sta_ssid;
+  String ap_ssid;
+  float signal;
+};
+
 class WiFiManager{
 
   public:
@@ -40,6 +52,9 @@ class WiFiManager{
     String getIP();
     String getSSID();
     String getStatus();
+    String getMac();
+    float getSignalStrength();
+    NetworkInfo getNetworkInfo();
     String mode2string(WiFiModes m);
     WiFiModes string2mode(String m);
     

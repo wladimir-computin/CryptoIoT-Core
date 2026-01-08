@@ -638,15 +638,33 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 			jsonObj[apps[i]->getName()] = apps[i]->getVersion();
 		}
 
+		jsonObj["env"] = PIOENV;
+
 		String out;
-		out.reserve(64*apps_len);
-		serializeJson(json, out);
-		out.replace("},{", "},\n{");
+		out.reserve(128*apps_len);
+		serializeJsonPretty(json, out);
 		return {DATA, out};
 	}
 
-	if (COMMAND_BUILDENV.check(message)) {
-		return {DATA, PIOENV};
+	if (COMMAND_NETWORK.check(message)) {
+		NetworkInfo info = wifi.getNetworkInfo();
+
+		JsonDocument json;
+		JsonObject jsonObj = json.to<JsonObject>();
+		jsonObj["mode"] = info.mode;
+		jsonObj["connection_state"] = info.connection_state;
+		jsonObj["mac"] = info.mac;
+		jsonObj["hostname"] = info.hostname;
+		jsonObj["sta_ip"] = info.sta_ip;
+		jsonObj["ap_ip"] = info.ap_ip;
+		jsonObj["sta_ssid"] = info.sta_ssid;
+		jsonObj["ap_ssid"] = info.ap_ssid;
+		jsonObj["signal"] = info.signal;
+
+		String out;
+		out.reserve(512);
+		serializeJsonPretty(json, out);
+		return {DATA, out};
 	}
 	
 	printDebug("Received unknown command:" + message);
