@@ -5,6 +5,7 @@
  */
 
 #include "CryptoIoT.h"
+#include "Config.h"
 
 #if CRYPTOIOT_ENABLETCP == 1
 #include "TCPCleanup.h"
@@ -435,7 +436,7 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 	}
 	
 	if (COMMAND_REBOOT.check(message)) {
-		reboot.reboot(1000);
+		system.reboot(1000);
 		return {ACK, ""};
 	}
 	
@@ -626,6 +627,22 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 		int epoch = COMMAND_SETTIME.getParamVal(message, 0).toInt();
 		mytime.setTime(epoch);
 		return {ACK, ""};
+	}
+
+	if (COMMAND_VERSION.check(message)) {
+		JsonDocument json;
+		JsonObject jsonObj = json.to<JsonObject>();
+		jsonObj["CryptoIoT"] = SYS_VERSION;
+
+		for (int i = 0; i < apps_len; i++) {
+			jsonObj[apps[i]->getName()] = apps[i]->getVersion();
+		}
+
+		String out;
+		out.reserve(64*apps_len);
+		serializeJson(json, out);
+		out.replace("},{", "},\n{");
+		return {DATA, out};
 	}
 
 	if (COMMAND_BUILDENV.check(message)) {

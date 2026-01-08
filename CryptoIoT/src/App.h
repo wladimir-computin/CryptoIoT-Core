@@ -55,11 +55,14 @@ class App{
     virtual String getStatus() = 0;
     virtual String getName() = 0;
 	virtual String getType() = 0;
+    virtual String getVersion() {
+      return "1.0";
+    }
     virtual void loop(){};
     virtual void setup(){};
 	void giveAPIAccess(CryptoIoT_API c){
 		cryptoiot = c;
-	};
+	}
     
     int getNumCommands(){
       return commands_len;

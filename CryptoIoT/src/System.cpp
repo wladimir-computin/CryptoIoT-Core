@@ -25,3 +25,7 @@ String System::getSerialID(bool delim){
 	getSerialID(buf, delim);
 	return buf;
 }
+
+void System::reboot(unsigned long delay_ms){
+	reboot_handler.reboot(delay_ms);
+}
