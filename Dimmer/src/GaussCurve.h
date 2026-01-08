@@ -12,11 +12,16 @@
 
 class GaussCurve {
   public:
-    bool generateTableFromPoints(double points[][2], int numberpoints, int maximum, int * lookuptable, int size_lookup);
+    GaussCurve(int min_output = 0, int max_output = 1023);
+    bool generatePolynomFromPoints(double points[][2], int numberpoints);
     bool solve(double * mat, double * solution, int size);
     double plot(double * parameters, int size, double x);
-    void generateLookupTable(double * parameters, int maximum, int size, int * lookuptable, int size_lookup);
+    double calc(double x);
   
   private:
     bool gaussianElimination(double * mat, int size, double * solution);
+    double parameters[10];
+    int size = 0;
+    int min = 0;
+    int max = 0;
 };

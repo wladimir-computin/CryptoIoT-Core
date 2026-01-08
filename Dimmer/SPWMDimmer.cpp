@@ -1,19 +1,19 @@
 /*
-  CryptoGarage - PWMPWMDimmer
+  CryptoGarage - PWMSPWMDimmer
 
   (implementation)
 */
 
-#include "PWMDimmer.h"
+#include "SPWMDimmer.h"
 
-PWMDimmer::PWMDimmer(const char * name, int pin) : IDimmer(name), curve(MIN_BRIGHTNESS, MAX_BRIGHTNESS) {
+SPWMDimmer::SPWMDimmer(const char * name, int pin) : IDimmer(name), curve(MIN_BRIGHTNESS, MAX_BRIGHTNESS) {
 	pwmPin = pin;
 }
 
-void PWMDimmer::loop() {
+void SPWMDimmer::loop() {
 }
 
-void PWMDimmer::setup() {
+void SPWMDimmer::setup() {
 	PersistentMemory pmem(appname, true);
 	pwmPin = pmem.readInt(KEY_PWM_PIN, pwmPin);
 	#ifdef ARDUINO_ARCH_ESP32
@@ -23,7 +23,7 @@ void PWMDimmer::setup() {
 	#endif
 	pmem.commit();
   
-	printDebug("[PWMDimmer] Generating polynom...");
+	printDebug("[SPWMDimmer] Generating polynom...");
 	const char * pointsarr = pointsstr.c_str();
 	double points[10][2];
 	int x;
@@ -57,18 +57,14 @@ void PWMDimmer::setup() {
 
 }
 
-void PWMDimmer::setVal(double val) {
+void SPWMDimmer::setVal(double val) {
 	curBrightness = val;
 	if(pwmPin >= 0){
-		if(val > MIN_BRIGHTNESS){
-			int out = curve.calc(curBrightness);
-			analogWrite(pwmPin, constrain(out, MIN_BRIGHTNESS, MAX_BRIGHTNESS));
-		} else {
-			analogWrite(pwmPin, MIN_BRIGHTNESS);
-		}
+		int out = curve.calc(curBrightness);
+		analogWrite(pwmPin, constrain(out, MIN_BRIGHTNESS, MAX_BRIGHTNESS));
 	}
 }
 
-double PWMDimmer::getVal() {
+double SPWMDimmer::getVal() {
   return curBrightness;
 }

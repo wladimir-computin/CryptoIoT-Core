@@ -97,8 +97,9 @@ static Command COMMAND_UPDATE("update");
 static Command COMMAND_WIFISCAN("wifiscan");
 static Command COMMAND_WIFIRESULTS("wifiresults");
 static Command COMMAND_SETTIME("settime",  ARRAY_LEN(COMMAND_SETTIME_PARAMS), COMMAND_SETTIME_PARAMS);
+static Command COMMAND_BUILDENV("buildenv");
 
-static Command * commands[] = {&COMMAND_HELP, &COMMAND_APPS, &COMMAND_API, &COMMAND_LOG, &COMMAND_GET_STATUS, &COMMAND_READ_SETTING, &COMMAND_WRITE_SETTING, &COMMAND_RESET, &COMMAND_REBOOT, &COMMAND_DELAYED, &COMMAND_DISCOVER, &COMMAND_PING, &COMMAND_UPDATE, &COMMAND_WIFISCAN, &COMMAND_WIFIRESULTS, &COMMAND_SETTIME};
+static Command * commands[] = {&COMMAND_HELP, &COMMAND_APPS, &COMMAND_API, &COMMAND_LOG, &COMMAND_GET_STATUS, &COMMAND_READ_SETTING, &COMMAND_WRITE_SETTING, &COMMAND_RESET, &COMMAND_REBOOT, &COMMAND_DELAYED, &COMMAND_DISCOVER, &COMMAND_PING, &COMMAND_UPDATE, &COMMAND_WIFISCAN, &COMMAND_WIFIRESULTS, &COMMAND_SETTIME, &COMMAND_BUILDENV};
 
 const char KEY_DEVICEPASS[] = "devicepass";
 const char KEY_HOSTNAME[] = "hostname";
@@ -112,6 +113,7 @@ class CryptoIoT {
 	void setDeviceType(const char * type);
 	void setAppVersion(const char * version);
     ProcessMessageStruct processMessage(String &message);
+    static void processMessageStatic(void * context, String& message);
   
   private:
     String hostname;

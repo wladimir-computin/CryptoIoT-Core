@@ -6,6 +6,8 @@
 
 #pragma once
 
+#if !efined(ARDUINO_ARCH_ESP32)
+
 #include <App.h>
 #include <PersistentMemory.h>
 
@@ -15,18 +17,18 @@
 const char KEY_PWM_PIN[] = "pwm_pin";
 const char KEY_CURVE_POINTS[] = "curve_points";
 
-class PWMDimmer : public IDimmer {
+const int MAX_BRIGHTNESS = 16382;
+const int MIN_BRIGHTNESS = 0;
+
+class SPWMDimmer : public IDimmer {
 
   private:
-    const int MAX_BRIGHTNESS = 16382;
-    const int MIN_BRIGHTNESS = 0;
-
     GaussCurve curve;
     int pwmPin;
 
   public:
     //Here we process the plaintext commands and generate an answer for the client.
-    PWMDimmer(const char * name, int pin=-1);
+    SPWMDimmer(const char * name, int pin=-1);
     void loop();
     void setup();
     void setVal(double val);

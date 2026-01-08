@@ -18,8 +18,6 @@ class IDimmer : public App {
     enum FadeMode {NONE, SINGLE_ON_OFF, SINGLE_OFF_ON, PERIODIC_FADE};
 
   protected:
-	virtual double toRelative(int absolute) = 0;
-    virtual int toAbsolute(double relative) = 0;
 
     struct Argument {
       int time_ms;
@@ -58,5 +56,5 @@ class IDimmer : public App {
     void fadeStop();
 	bool isFading();
 
-    volatile int curBrightness = 0;
+    volatile double curBrightness = 0;
 };

@@ -2,8 +2,6 @@
 * CryptoGarage - IButton
 * 
 * Abstract class for controlling buttons.
-* If you want to add your own relay, you have to implement the setState() and getState() methods.
-* Take a look at LCTechRelay and WemosShieldRelay for examples.
 */
 
 #pragma once
@@ -28,7 +26,7 @@ class IButton{
   protected:
     ButtonState currentState = BUTTON_RELEASED;
     bool buttonSamples[3];
-    int samplesSize = sizeof(buttonSamples) / sizeof(buttonSamples[0]);
+    int samplesSize = 3;
     int currentSample = 0;
     const int WAIT_TIME = 100;
     unsigned long nextMillis = 0;

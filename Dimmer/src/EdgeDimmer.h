@@ -29,12 +29,8 @@ class EdgeDimmer : public IDimmer {
 
   private:
     GaussCurve curve;
-    int dimmer_index;
-    
-    uint16_t LongestDutyPauseUs = 42500;  
-	
-    double toRelative(int absolute);
-    int toAbsolute(double relative);
+    volatile int dimmer_index;
+    volatile uint16_t longestDutyPauseUs = 42500;
 	
   public:
     //Here we process the plaintext commands and generate an answer for the client.
@@ -44,13 +40,13 @@ class EdgeDimmer : public IDimmer {
     void setup();
 	void setVal(double val);
     double getVal();
-	
-    int pwmPin = 12;
-    int zcPin = 13;
-	bool flickerfix = false;
-};
 
-IRAM_ATTR int transform(int input);
+    IRAM_ATTR int transform(double input);
+	
+    volatile int pwmPin = 12;
+    volatile int zcPin = 13;
+    volatile bool flickerfix = false;
+};
 IRAM_ATTR int sort_dimmers();
 IRAM_ATTR void zeroCrossISR();
 IRAM_ATTR void onTimerISR();

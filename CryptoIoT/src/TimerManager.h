@@ -22,7 +22,7 @@ class TimerManager {
 		TimerEvent timer_events[10];
 		App ** apps;
 		int num_apps;
-		int lastMillis = 0;
+		uint32_t lastMillis = 0;
 		
 		void sortByTimes();
 		static int sort_events(const void *cmp1, const void *cmp2);

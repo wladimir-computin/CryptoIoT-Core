@@ -6,46 +6,53 @@
 
 #include "GaussCurve.h"
 
-bool GaussCurve::generateTableFromPoints(double points[][2], int numberpoints, int maximum, int * lookuptable, int size_lookup) {
+GaussCurve::GaussCurve(int min_output, int max_output) : min(min_output), max(max_output){
+
+}
+
+bool GaussCurve::generatePolynomFromPoints(double points[][2], int numberpoints) {
   double mat[numberpoints * numberpoints];
-  double solution[numberpoints];
+  if(numberpoints < (sizeof(parameters) / sizeof(parameters[0]))){
 
-  for (int row = 0; row < numberpoints; row++) {
-    for (int col = 0; col < numberpoints; col++) {
-      mat[row * numberpoints + col] = pow(points[row][0], numberpoints - 1 - col);
+    for (int row = 0; row < numberpoints; row++) {
+      for (int col = 0; col < numberpoints; col++) {
+        mat[row * numberpoints + col] = pow(points[row][0], numberpoints - 1 - col);
+      }
     }
-  }
 
-  for (int row = 0; row < numberpoints; row++) {
-    solution[row] = points[row][1];
-  }
-
-  if (solve(mat, solution, numberpoints)) {
-    generateLookupTable(solution, numberpoints, maximum, lookuptable, size_lookup);
-    String poly = String("f(x) = ") + String(solution[0], 10) + "x^" + (numberpoints - 1);
-    for (int i = 1; i < numberpoints; i++) {
-      if (solution[i] == 0) continue;
-      if (solution[i] > 0) poly += " + ";
-      poly += String(solution[i], 10) + "x^" + (numberpoints - i - 1);
+    for (int row = 0; row < numberpoints; row++) {
+      parameters[row] = points[row][1];
     }
-    poly.replace("-", " - ");
-    poly.replace("x^0", "");
-    printDebug(poly);
+
+    if (solve(mat, parameters, numberpoints)) {
+      size = numberpoints;
+      String poly = String("f(x) = ") + String(parameters[0], 10) + "x^" + (size - 1);
+      for (int i = 1; i < size; i++) {
+        if (parameters[i] == 0) continue;
+        if (parameters[i] > 0) poly += " + ";
+        poly += String(parameters[i], 10) + "x^" + (size - i - 1);
+      }
+      poly.replace("-", " - ");
+      poly.replace("x^0", "");
+      printDebug(poly);
+    } else {
+      printDebug("Failed to generate polynom!");
+      return false;
+    }
+    return true;
   } else {
-    printDebug("Failed to generate polynom!");
-	return false;
+    return false;
   }
-  return true;
+
 }
 
 bool GaussCurve::solve(double * mat, double * solution, int size) {
   return gaussianElimination(mat, size, solution);
 }
 
-void GaussCurve::generateLookupTable(double * parameters, int size, int maximum, int * lookuptable, int size_lookup) {
-  for (int i = 0; i < size_lookup; i++) {
-    lookuptable[i] = maximum - (int)round(plot(parameters, size, i) * (maximum / 1000));
-  }
+double GaussCurve::calc(double x) {
+  int out = (int)round(plot(parameters, size, x*1000));
+  return constrain(out, min, max);
 }
 
 double GaussCurve::plot(double * parameters, int size, double x) {

@@ -16,7 +16,7 @@ const int TCP_SERVER_PORT = 4646;
 const int UDP_SERVER_PORT = 4647;
 const int ARDUINO_OTA_PORT = 3232;
 const int HTTP_OTA_PORT = 8266;
-const int MAX_MESSAGE_LEN = 1024;
+const int MAX_MESSAGE_LEN = 1472;
 const int DEFAULT_CHALLENGE_VALIDITY_TIMEOUT = 60; //Seconds which the client has to answer the challenge message.
 const int RATE_LIMIT_TIMEOUT_MS = 200; //Milliseconds between communication attempts, set to 0 to disable rate limiting.
 const int TCP_TIMEOUT_MS = 100;  //Time before drop incoming transmsission as it takes too long
@@ -41,5 +41,5 @@ const char DEFAULT_WIFI_AP_IP[] = "192.168.4.1";
 const char KEY_SALT[] = "FTh.!%B$";
 const int SHA_ROUNDS = 5000;
 
-const char SYS_VERSION[] = "10.4";
+const char SYS_VERSION[] = "10.5";
 

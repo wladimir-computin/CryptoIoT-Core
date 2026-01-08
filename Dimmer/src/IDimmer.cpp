@@ -97,8 +97,9 @@ void IDimmer::ledTickerTick(void * context) {
 }
 
 void IDimmer::ledTickerTick2() {
-  if (toAbsolute(argument.goal) == toAbsolute(getVal())) {
+  if (abs(argument.goal - getVal()) <= 0.00001) {
     ledTicker.detach();
+    setVal(argument.goal);
     fadeCompleted();
   } else {
     double m = ease((double)(argument.ms_passed) / (double)argument.time_ms);
@@ -142,7 +143,7 @@ void IDimmer::fadeStop() {
 }
 
 bool IDimmer::isFading(){
-  return argument.goal != getVal() && ledTicker.active();
+  return (abs(argument.goal - getVal()) > 0.00001) && ledTicker.active();
 }
 
 double IDimmer::ease(double t) {

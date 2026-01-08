@@ -5,17 +5,15 @@
 */
 
 #ifdef ARDUINO_ARCH_ESP8266
-
 #include "EdgeDimmer.h"
 
-static int curve_lookup[1000 + 1];
 volatile static int dimmer_count = 0;
-const static EdgeDimmer* refs[5];
-const static EdgeDimmer* next_dimmer[5];
+static EdgeDimmer* refs[5];
+static EdgeDimmer* next_dimmer[5];
 volatile static int next = 0;
 volatile static int next_len = 0;
 
-EdgeDimmer::EdgeDimmer(const char * name) : IDimmer(name){
+EdgeDimmer::EdgeDimmer(const char * name) : IDimmer(name), curve(MIN_BRIGHTNESS,MAX_BRIGHTNESS){
 }
 
 EdgeDimmer::~EdgeDimmer() {
@@ -28,7 +26,7 @@ void EdgeDimmer::loop() {
 void EdgeDimmer::setup() {
   PersistentMemory pmem(appname, true);
 
-  LongestDutyPauseUs = pmem.readInt(KEY_LONGEST_DUTY_PAUSE, LongestDutyPauseUs);
+  longestDutyPauseUs = pmem.readInt(KEY_LONGEST_DUTY_PAUSE, longestDutyPauseUs);
   flickerfix = pmem.readBool(KEY_FLICKER_FIX, false);
   pwmPin = pmem.readInt(KEY_PWM_PIN, pwmPin);
   zcPin = pmem.readInt(KEY_ZC_PIN, zcPin);
@@ -54,9 +52,9 @@ void EdgeDimmer::setup() {
     }
   }
 
-  printDebug("[Dimmer] Generating lookup table...");
+  printDebug("[Dimmer] Generating polynom...");
   //double points[][2] = {{0, 0}, {1000, 1000}, { -1000, 1000}, {560, 322}, { -560, 322}, {600, 330}, { -600, 330}};
-  curve.generateTableFromPoints(points, i, LongestDutyPauseUs, curve_lookup, sizeof(curve_lookup) / sizeof(curve_lookup[0]));
+  curve.generatePolynomFromPoints(points, i);
 
   pinMode(pwmPin, OUTPUT);
 
@@ -73,29 +71,21 @@ void EdgeDimmer::setup() {
 }
 
 void EdgeDimmer::setVal(double val) {
-  curBrightness = toAbsolute(val);
+  curBrightness = val;
 }
 
 double EdgeDimmer::getVal() {
-  return toRelative(curBrightness);
+  return curBrightness;
 }
 
-double EdgeDimmer::toRelative(int absolute) {
-  return (double)absolute / MAX_BRIGHTNESS;
-}
-
-int EdgeDimmer::toAbsolute(double relative) {
-  return round(relative * MAX_BRIGHTNESS);
-}
-
-int transform(int input) {
-  return curve_lookup[input];
+int EdgeDimmer::transform(double input) {
+  return longestDutyPauseUs * (1.0 - ((double)curve.calc(input) / MAX_BRIGHTNESS));
 }
 
 void onTimerISR() {
   digitalWrite(next_dimmer[next]->pwmPin, HIGH);
   if(next_dimmer[next]->flickerfix){
-	if (next_dimmer[next]->curBrightness <= 850) {
+	if (next_dimmer[next]->curBrightness <= 0.85) {
 		for (int i = 0; i < 5; i++) {
 			digitalWrite(next_dimmer[next]->pwmPin, HIGH);
 		}
@@ -103,9 +93,9 @@ void onTimerISR() {
 	}
   }
   if (next + 1 < next_len) {
-    int wait = transform(next_dimmer[next + 1]->curBrightness);
+    int wait = next_dimmer[next + 1]->transform(next_dimmer[next + 1]->curBrightness);
     for (int i = next; i >= 0; i--) {
-      wait -= transform(next_dimmer[i]->curBrightness);
+      wait -= next_dimmer[i]->transform(next_dimmer[i]->curBrightness);
     }
     next++;
     if (wait != 0) {
@@ -119,7 +109,7 @@ void onTimerISR() {
 int sort_dimmers(const void *cmp1, const void *cmp2) {
   EdgeDimmer * a = *((EdgeDimmer **)cmp1);
   EdgeDimmer * b = *((EdgeDimmer **)cmp2);
-  return b->curBrightness - a->curBrightness;
+  return (int)(b->curBrightness*1000) - (int)(a->curBrightness*1000);
 }
 
 volatile unsigned long lastmicros = 0;
@@ -130,9 +120,9 @@ void zeroCrossISR() {
     lastmicros = now;
     int index = 0;
     for (int i = 0; i < dimmer_count; i++) {
-      if (refs[i]->curBrightness == MAX_BRIGHTNESS) {
+      if (refs[i]->curBrightness == 1) {
         digitalWrite(refs[i]->pwmPin, HIGH);
-      } else if (refs[i]->curBrightness == MIN_BRIGHTNESS) {
+      } else if (refs[i]->curBrightness == 0) {
         digitalWrite(refs[i]->pwmPin, LOW);
       } else {
         digitalWrite(refs[i]->pwmPin, LOW);
@@ -145,7 +135,7 @@ void zeroCrossISR() {
       if (next_len > 1) {
         qsort(next_dimmer, next_len, sizeof(next_dimmer[0]), sort_dimmers);
       }
-      timer1_write(transform(next_dimmer[next]->curBrightness));
+      timer1_write(next_dimmer[next]->transform(next_dimmer[next]->curBrightness));
     }
   }
 }

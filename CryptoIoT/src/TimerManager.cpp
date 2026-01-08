@@ -15,7 +15,7 @@ void TimerManager::setup(){
 }
 
 void TimerManager::loop(){
-	long now = millis();
+	uint32_t now = millis();
 	if (now - lastMillis >= 1) {
 		TimerEvent &event = timer_events[0];
 		if(now >= event.timestamp && event.timestamp != UINT32_MAX){

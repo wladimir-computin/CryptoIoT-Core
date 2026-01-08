@@ -31,22 +31,25 @@ const char SUNSET[] = "sunset";
 struct TimeEvent{
 	int8_t type = STATIC_TIME;
 	int minutes = INVALID_TIME;
-	String command;
+	String command[10];
 	bool done = false;
 };
 
 struct AppEvent{
 	String event;
-	String command;
+	String command[10];
 	bool done = false;
 };
+
+typedef void (*ProcessMessageFun)(void * context, String& message);
 
 class EventManager {
 	private:
 		TimeEvent time_events[10];
 		AppEvent device_events[10];
-		App ** apps;
 		Time * time;
+		ProcessMessageFun processMessageFun;
+		void * context;
 		int num_apps;
 		int lastMillis = -50 * 1000;
 		bool time_events_enabled;
@@ -61,7 +64,7 @@ class EventManager {
 		static int mod(int a, int b);
 	  
 	public:
-		EventManager(App ** apps, int apps_len, Time * time);
+		EventManager(void * context, ProcessMessageFun processMessageFunction, Time * time);
 		void setup();
 		void loop();
 		String getStatus();

@@ -12,7 +12,7 @@
 
 String discover = String(ENCRYPTED_CIOTv2_MESSAGE) + COMMAND_DISCOVER.str_command;
 
-CryptoIoT::CryptoIoT(App ** apps, int apps_len) : eventManager(apps, apps_len, &mytime), timerManager(apps, apps_len) ,ota(&led), applog(APPLOG_SIZE)
+CryptoIoT::CryptoIoT(App ** apps, int apps_len) : eventManager(this, processMessageStatic, &mytime), timerManager(apps, apps_len) ,ota(&led), applog(APPLOG_SIZE)
 #if CRYPTOIOT_ENABLETCP == 1
 , tcpserver(TCP_SERVER_PORT)
 #endif
@@ -627,7 +627,15 @@ ProcessMessageStruct CryptoIoT::processMessage(String &message) {
 		mytime.setTime(epoch);
 		return {ACK, ""};
 	}
+
+	if (COMMAND_BUILDENV.check(message)) {
+		return {DATA, PIOENV};
+	}
 	
 	printDebug("Received unknown command:" + message);
 	return {ERR, "Unknown Command"};
+}
+
+void CryptoIoT::processMessageStatic(void * context, String& message) {
+	((CryptoIoT*)context)->processMessage(message);
 }

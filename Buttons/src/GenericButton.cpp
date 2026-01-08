@@ -15,4 +15,3 @@ GenericButton::GenericButton(int pin, bool invert, int mode){
 bool GenericButton::getState(){
   return invert ? !digitalRead(inputPin) : digitalRead(inputPin);
 }
-

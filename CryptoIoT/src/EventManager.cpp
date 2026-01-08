@@ -6,10 +6,8 @@
 
 #include "EventManager.h"
 
-EventManager::EventManager(App ** apps, int apps_len, Time * time){
-	this->apps = apps;
-	num_apps = apps_len;
-	this->time = time;
+EventManager::EventManager(void * context, ProcessMessageFun processMessageFunction, Time * t) : processMessageFun(processMessageFunction), time(t){
+	this->context = context;
 }
 
 void EventManager::setup(){
@@ -29,7 +27,16 @@ void EventManager::setup(){
 		for (JsonObject obj : arr) {
 			for (JsonPair p : obj) {
 				String key = p.key().c_str();
-				time_events[i].command = p.value().as<String>();
+				JsonArray cmdArr = p.value().as<JsonArray>();
+				if(cmdArr){
+					int j = 0;
+					for(String cmd : cmdArr){
+						time_events[i].command[j++] = cmd;
+					}
+				} else {
+					time_events[i].command[0] = p.value().as<String>();
+				}
+
 				if (key == SUNRISE) {
 					time_events[i].type = SUNRISE_TIME;
 				} else if (key == SUNSET) {
@@ -54,7 +61,15 @@ void EventManager::setup(){
 		for (JsonObject obj : arr) {
 			for (JsonPair p : obj) {
 				device_events[i].event = p.key().c_str();
-				device_events[i].command = p.value().as<String>();
+				JsonArray cmdArr = p.value().as<JsonArray>();
+				if(cmdArr){
+					int j = 0;
+					for(String cmd : cmdArr){
+						device_events[i].command[j++] = cmd;
+					}
+				} else {
+					device_events[i].command[0] = p.value().as<String>();
+				}
 			}
 			num_device_events++;
 			if (++i == sizeof(device_events) / sizeof(device_events[0])) {
@@ -82,12 +97,11 @@ void EventManager::loop(){
 
 			TimeEvent &event = time_events[last_event_index];
 			if (!event.done) {
-				String appname = Message::getParam(event.command,0);
-				for (int i = 0; i < num_apps; i++) {
-					if(apps[i]->getName() == appname){
-						printDebug("[EventMan] Time event -> " + event.command);
-						String m = Message::getParam(event.command,1,true);
-						apps[i]->processMessage(m);
+				for(int i = 0; i < 10; i++){
+					if(event.command[i] != ""){
+						processMessageFun(context, event.command[i]);
+					} else {
+						break;
 					}
 				}
 				event.done = true;
@@ -112,11 +126,22 @@ String EventManager::getStatus() {
 		} else {
 			out += Time::min2str(time_events[i].minutes);
 		}
-		out += " -> " + String(time_events[i].command) + "\n";
+		out += " ->\n";
+		for (String& cmd : time_events[i].command){
+			if(cmd != ""){
+				out += "   " + cmd + "\n";
+			}
+		}
 	}
 	out += "\n";
 	for (int i = 0; i < num_device_events; i++) {
-		out += device_events[i].event + " -> " + device_events[i].command + "\n";
+		out += device_events[i].event + " ->\n";
+		for (String& cmd : device_events[i].command){
+			if(cmd != ""){
+				out += "   " + cmd + "\n";
+			}
+		}
+
 	}
 	
 	return out;
@@ -151,12 +176,11 @@ void EventManager::notify(String& event){
 		printDebug("[EventMan] Notify: " + event);
 		for (int i = 0; i < num_device_events; i++) {
 			if (device_events[i].event == event) {
-				String appname = Message::getParam(device_events[i].command,0);
-				for (int j = 0; j < num_apps; j++) {
-					if(apps[j]->getName() == appname){
-						printDebug("[EventMan] Event " + event + " -> " + device_events[i].command);
-						String m = Message::getParam(device_events[i].command,1,true);
-						apps[j]->processMessage(m);
+				for(int j = 0; j < 10; j++){
+					if(device_events[i].command[j] != ""){
+						processMessageFun(context, device_events[i].command[j]);
+					} else {
+						break;
 					}
 				}
 			}
